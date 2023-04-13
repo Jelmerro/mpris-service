@@ -2,7 +2,7 @@
 
 Node.js implementation for the MPRIS D-Bus Interface Specification to create a mediaplayer service.
 
-`npm install TODO`
+`npm install git+https://github.com/Jelmerro/mpris-service.git`
 
 ```js
 var Player = require('mpris-service');

@@ -3,10 +3,8 @@
   "version": "0.0.0-dev",
   "description": "Node.js implementation for the MPRIS D-Bus Interface Specification to create a mediaplayer service",
   "main": "src/index.js",
-  "repository": {
-    "type": "git",
-    "url": "TODO"
-  },
+  "repository": "https://github.com/Jelmerro/mpris-service",
+  "homepage": "https://github.com/Jelmerro/mpris-service",
   "keywords": [
     "mpris",
     "media",
@@ -14,8 +12,9 @@
     "dbus"
   ],
   "author": "Jelmer van Arnhem",
+  "email": "Jelmerro@users.noreply.github.com",
+  "funding": "https://github.com/sponsors/Jelmerro/",
   "license": "MIT",
-  "homepage": "TODO",
   "dependencies": {
     "dbus-next": "0.10.2"
   },
