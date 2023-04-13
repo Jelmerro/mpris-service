@@ -21,7 +21,6 @@ module.exports = {
         "capitalized-comments": [
             "error", "always", {"ignoreConsecutiveComments": true}
         ],
-        "class-methods-use-this": "error",
         "comma-dangle": "error",
         "comma-spacing": "error",
         "comma-style": "error",
@@ -51,9 +50,6 @@ module.exports = {
         "lines-around-comment": ["error", {"beforeBlockComment": false}],
         "lines-between-class-members": "error",
         "max-depth": "error",
-        "max-len": [
-            "error", {"ignoreRegExpLiterals": true, "ignoreUrls": true}
-        ],
         "max-nested-callbacks": "error",
         "max-params": ["error", 6],
         "max-statements-per-line": "error",

@@ -15,6 +15,10 @@
   "email": "Jelmerro@users.noreply.github.com",
   "funding": "https://github.com/sponsors/Jelmerro/",
   "license": "MIT",
+  "scripts": {
+    "fix": "eslint src/ examples/ --fix",
+    "lint": "eslint src/ examples/"
+  },
   "dependencies": {
     "dbus-final": "github:Jelmerro/dbus-final"
   },
