@@ -1,6 +1,6 @@
 "use strict"
 
-const {Variant} = require("dbus-next")
+const {Variant} = require("dbus-final")
 
 const guessMetadataSignature = (key, value) => {
     if (key === "mpris:trackid") {

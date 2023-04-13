@@ -3,8 +3,7 @@
 const events = require("events")
 const util = require("util")
 
-const dbus = require("dbus-next")
-dbus.setBigIntCompat(true)
+const dbus = require("dbus-final")
 const PlayerInterface = require("./player")
 const RootInterface = require("./root")
 const PlaylistsInterface = require("./playlists")

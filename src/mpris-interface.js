@@ -1,6 +1,6 @@
 "use strict"
 
-const {Interface} = require("dbus-next").interface
+const {Interface} = require("dbus-final").interface
 const {
     addDBusTypes, metadataToDbus, playlistToDbus, emptyPlaylist
 } = require("./util")
