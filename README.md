@@ -1,22 +1,18 @@
 # mpris-service
 
-[![Build Status](https://travis-ci.org/dbusjs/mpris-service.svg?branch=master)](https://travis-ci.org/dbusjs/mpris-service)
-
 Node.js implementation for the MPRIS D-Bus Interface Specification to create a mediaplayer service.
 
-[Documentation](http://specifications.freedesktop.org/mpris-spec/latest/)
-
-[Chat](https://discord.gg/UdbXHVX)
+`npm install TODO`
 
 ```js
 var Player = require('mpris-service');
 
 var player = Player({
-	name: 'nodejs',
-	identity: 'Node.js media player',
-	supportedUriSchemes: ['file'],
-	supportedMimeTypes: ['audio/mpeg', 'application/ogg'],
-	supportedInterfaces: ['player']
+    name: 'nodejs',
+    identity: 'Node.js media player',
+    supportedUriSchemes: ['file'],
+    supportedMimeTypes: ['audio/mpeg', 'application/ogg'],
+    supportedInterfaces: ['player']
 });
 ```
 
@@ -26,13 +22,13 @@ Implemented interfaces:
 * [`org.mpris.MediaPlayer2.TrackList`](http://specifications.freedesktop.org/mpris-spec/latest/Track_List_Interface.html)
 * [`org.mpris.MediaPlayer2.Playlists`](http://specifications.freedesktop.org/mpris-spec/latest/Playlists_Interface.html)
 
-Examples are available in [`examples/`](https://github.com/dbusjs/mpris-service/tree/master/examples).
+Examples are available in [`examples/`](./examples/).
 
 ## Default interface
 
 ```js
 player.on('quit', function () {
-	process.exit();
+    process.exit();
 });
 ```
 
@@ -53,12 +49,12 @@ Properties:
 ```js
 // See http://www.freedesktop.org/wiki/Specifications/mpris-spec/metadata/
 player.metadata = {
-	'mpris:trackid': player.objectPath('track/0'),
-	'mpris:length': 60 * 1000 * 1000, // In microseconds
-	'mpris:artUrl': 'https://pbs.twimg.com/profile_images/378800000822867536/3f5a00acf72df93528b6bb7cd0a4fd0c.jpeg',
-	'xesam:title': 'Best song',
-	'xesam:album': 'Best album',
-	'xesam:artist': ['Best singer']
+    'mpris:trackid': player.objectPath('track/0'),
+    'mpris:length': 60 * 1000 * 1000, // In microseconds
+    'mpris:artUrl': 'https://pbs.twimg.com/profile_images/378800000822867536/3f5a00acf72df93528b6bb7cd0a4fd0c.jpeg',
+    'xesam:title': 'Best song',
+    'xesam:album': 'Best album',
+    'xesam:artist': ['Best singer']
 };
 
 player.playbackStatus = 'Playing';

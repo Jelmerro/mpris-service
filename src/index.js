@@ -1,22 +1,17 @@
-require('source-map-support').install();
+"use strict"
 
-const events = require('events');
-const util = require('util');
+const events = require("events")
+const util = require("util")
 
-const dbus = require('dbus-next');
-dbus.setBigIntCompat(true);
-const PlayerInterface = require('./interfaces/player');
-const RootInterface = require('./interfaces/root');
-const PlaylistsInterface = require('./interfaces/playlists');
-const TracklistInterface = require('./interfaces/tracklist');
-const types = require('./interfaces/types');
-const constants = require('./constants');
+const dbus = require("dbus-next")
+dbus.setBigIntCompat(true)
+const PlayerInterface = require("./player")
+const RootInterface = require("./root")
+const PlaylistsInterface = require("./playlists")
+const TracklistInterface = require("./tracklist")
+const {constants, metadataToPlain, playlistToPlain, lcfirst} = require("./util")
 
-const MPRIS_PATH = '/org/mpris/MediaPlayer2';
-
-function lcfirst(str) {
-  return str[0].toLowerCase()+str.substr(1);
-}
+const MPRIS_PATH = "/org/mpris/MediaPlayer2"
 
 /**
  * Construct a new Player and export it on the DBus session bus.
@@ -164,96 +159,101 @@ function lcfirst(str) {
  * @property {String} activePlaylist - The id of the currently-active playlist.
  */
 function Player(opts) {
-  if (!(this instanceof Player)) {
-    return new Player(opts);
-  }
+    if (!(this instanceof Player)) {
+        return new Player(opts)
+    }
 
-  events.EventEmitter.call(this);
-  this.name = opts.name;
-  this.supportedInterfaces = opts.supportedInterfaces || ['player'];
-  this._tracks = [];
-  this.init(opts);
+    events.EventEmitter.call(this)
+    this.name = opts.name
+    this.supportedInterfaces = opts.supportedInterfaces || ["player"]
+    this._tracks = []
+    this.init(opts)
 }
-util.inherits(Player, events.EventEmitter);
+util.inherits(Player, events.EventEmitter)
 
 Player.prototype.init = function(opts) {
-  this.serviceName = `org.mpris.MediaPlayer2.${this.name}`;
-  dbus.validators.assertBusNameValid(this.serviceName);
-
-  this._bus = dbus.sessionBus();
-
-  this._bus.on('error', (err) => {
-    this.emit('error', err);
-  });
-
-  this.interfaces = {};
-
-  this._addRootInterface(this._bus, opts);
-
-  if (this.supportedInterfaces.indexOf('player') >= 0) {
-    this._addPlayerInterface(this._bus);
-  }
-  if (this.supportedInterfaces.indexOf('trackList') >= 0) {
-    this._addTracklistInterface(this._bus);
-  }
-  if (this.supportedInterfaces.indexOf('playlists') >= 0) {
-    this._addPlaylistsInterface(this._bus);
-  }
-
-  for (let k of Object.keys(this.interfaces)) {
-    let iface = this.interfaces[k];
-    this._bus.export(MPRIS_PATH, iface);
-  }
-
-  this._bus.requestName(this.serviceName, dbus.NameFlag.DO_NOT_QUEUE)
-    .then((reply) => {
-      if (reply === dbus.RequestNameReply.EXISTS) {
-        this.serviceName = `${this.serviceName}.instance${process.pid}`;
-        return this._bus.requestName(this.serviceName);
-      }
+    this.serviceName = `org.mpris.MediaPlayer2.${this.name}`
+    dbus.validators.assertBusNameValid(this.serviceName)
+    this._bus = dbus.sessionBus()
+    this._bus.on("error", err => {
+        this.emit("error", err)
     })
-    .catch((err) => {
-      this.emit('error', err);
-    });
-};
-
-Player.prototype._addRootInterface = function(bus, opts) {
-  this.interfaces.root = new RootInterface(this, opts);
-  this._addEventedPropertiesList(this.interfaces.root,
-    ['Identity', 'Fullscreen', 'SupportedUriSchemes', 'SupportedMimeTypes',
-    'CanQuit', 'CanRaise', 'CanSetFullscreen', 'HasTrackList',
-    'DesktopEntry']);
-};
-
-Player.prototype._addPlayerInterface = function(bus) {
-  this.interfaces.player = new PlayerInterface(this);
-  let eventedProps = ['PlaybackStatus', 'LoopStatus', 'Rate', 'Shuffle',
-    'Metadata', 'Volume', 'CanControl', 'CanPause', 'CanPlay', 'CanSeek',
-    'CanGoNext', 'CanGoPrevious', 'MinimumRate', 'MaximumRate'];
-  this._addEventedPropertiesList(this.interfaces.player, eventedProps);
-};
-
-Player.prototype._addTracklistInterface = function(bus) {
-  this.interfaces.tracklist = new TracklistInterface(this);
-  this._addEventedPropertiesList(this.interfaces.tracklist, ['CanEditTracks']);
-
-  Object.defineProperty(this, 'tracks', {
-    get: function() {
-      return this._tracks;
-    },
-    set: function(value) {
-      this._tracks = value;
-      this.interfaces.tracklist.TrackListReplaced(value);
-    },
-    enumerable: true,
-    configurable: true
-  });
-};
-
-Player.prototype._addPlaylistsInterface = function(bus) {
-  this.interfaces.playlists = new PlaylistsInterface(this);
-  this._addEventedPropertiesList(this.interfaces.playlists,
-    ['PlaylistCount', 'ActivePlaylist']);
+    this.interfaces = {}
+    this._addRootInterface(this._bus, opts)
+    if (this.supportedInterfaces.indexOf("player") >= 0) {
+        this._addPlayerInterface(this._bus)
+    }
+    if (this.supportedInterfaces.indexOf("trackList") >= 0) {
+        this._addTracklistInterface(this._bus)
+    }
+    if (this.supportedInterfaces.indexOf("playlists") >= 0) {
+        this._addPlaylistsInterface(this._bus)
+    }
+    for (const k of Object.keys(this.interfaces)) {
+        const iface = this.interfaces[k]
+        this._bus.export(MPRIS_PATH, iface)
+    }
+    this._bus.requestName(this.serviceName, dbus.NameFlag.DO_NOT_QUEUE)
+        .then(reply => {
+            if (reply === dbus.RequestNameReply.EXISTS) {
+                this.serviceName = `${this.serviceName}.instance${process.pid}`
+                return this._bus.requestName(this.serviceName)
+            }
+        })
+        .catch(err => {
+            this.emit("error", err)
+        })
+}
+Player.prototype._addRootInterface = function(_bus, opts) {
+    this.interfaces.root = new RootInterface(this, opts)
+    this._addEventedPropertiesList(this.interfaces.root,
+        ["Identity",
+            "Fullscreen",
+            "SupportedUriSchemes",
+            "SupportedMimeTypes",
+            "CanQuit",
+            "CanRaise",
+            "CanSetFullscreen",
+            "HasTrackList",
+            "DesktopEntry"])
+}
+Player.prototype._addPlayerInterface = function() {
+    this.interfaces.player = new PlayerInterface(this)
+    const eventedProps = ["PlaybackStatus",
+        "LoopStatus",
+        "Rate",
+        "Shuffle",
+        "Metadata",
+        "Volume",
+        "CanControl",
+        "CanPause",
+        "CanPlay",
+        "CanSeek",
+        "CanGoNext",
+        "CanGoPrevious",
+        "MinimumRate",
+        "MaximumRate"]
+    this._addEventedPropertiesList(this.interfaces.player, eventedProps)
+}
+Player.prototype._addTracklistInterface = function() {
+    this.interfaces.tracklist = new TracklistInterface(this)
+    this._addEventedPropertiesList(this.interfaces.tracklist, ["CanEditTracks"])
+    Object.defineProperty(this, "tracks", {
+        "configurable": true,
+        "enumerable": true,
+        "get"() {
+            return this._tracks
+        },
+        "set"(value) {
+            this._tracks = value
+            this.interfaces.tracklist.TrackListReplaced(value)
+        }
+    })
+}
+Player.prototype._addPlaylistsInterface = function() {
+    this.interfaces.playlists = new PlaylistsInterface(this)
+    this._addEventedPropertiesList(this.interfaces.playlists,
+        ["PlaylistCount", "ActivePlaylist"])
 }
 
 /**
@@ -266,41 +266,37 @@ Player.prototype._addPlaylistsInterface = function(bus) {
  * @returns {String} - A valid object path that can be used as an id.
  */
 Player.prototype.objectPath = function(subpath) {
-  let path = `/org/node/mediaplayer/${this.name}`;
-  if (subpath) {
-    path += `/${subpath}`;
-  }
-  return path;
-};
-
+    let path = `/org/node/mediaplayer/${this.name}`
+    if (subpath) {
+        path += `/${subpath}`
+    }
+    return path
+}
 Player.prototype._addEventedProperty = function(iface, name) {
-  let that = this;
-
-  let localName = lcfirst(name);
-
-  Object.defineProperty(this, localName, {
-    get: function() {
-      let value = iface[name];
-      if (name === 'ActivePlaylist') {
-        return types.playlistToPlain(value);
-      } else if (name === 'Metadata') {
-        return types.metadataToPlain(value);
-      }
-      return value;
-    },
-    set: function(value) {
-      iface.setProperty(name, value);
-    },
-    enumerable: true,
-    configurable: true
-  });
-};
-
+    const localName = lcfirst(name)
+    Object.defineProperty(this, localName, {
+        "configurable": true,
+        "enumerable": true,
+        "get"() {
+            const value = iface[name]
+            if (name === "ActivePlaylist") {
+                return playlistToPlain(value)
+            }
+            if (name === "Metadata") {
+                return metadataToPlain(value)
+            }
+            return value
+        },
+        "set"(value) {
+            iface.setProperty(name, value)
+        }
+    })
+}
 Player.prototype._addEventedPropertiesList = function(iface, props) {
-  for (let i = 0; i < props.length; i++) {
-    this._addEventedProperty(iface, props[i]);
-  }
-};
+    for (let i = 0; i < props.length; i++) {
+        this._addEventedProperty(iface, props[i])
+    }
+}
 
 /**
  * Gets the position of this player. This method is intended to be overridden
@@ -311,7 +307,7 @@ Player.prototype._addEventedPropertiesList = function(iface, props) {
  * @returns {Integer} - The current position of the player in microseconds.
  */
 Player.prototype.getPosition = function() {
-  return 0;
+    return 0
 }
 
 /**
@@ -322,47 +318,39 @@ Player.prototype.getPosition = function() {
  * @param {Integer} position - The position in microseconds.
  */
 Player.prototype.seeked = function(position) {
-  let seekTo = Math.floor(position || 0);
-  if (isNaN(seekTo)) {
-    throw new Error(`seeked expected a number (got ${position})`);
-  }
-  this.interfaces.player.Seeked(seekTo);
-};
-
-Player.prototype.getTrackIndex = function(trackId) {
-  for (let i = 0; i < this.tracks.length; i++) {
-    let track = this.tracks[i];
-
-    if (track['mpris:trackid'] === trackId) {
-      return i;
+    const seekTo = Math.floor(position || 0)
+    if (isNaN(seekTo)) {
+        throw new Error(`seeked expected a number (got ${position})`)
     }
-  }
-
-  return -1;
-};
-
+    this.interfaces.player.Seeked(seekTo)
+}
+Player.prototype.getTrackIndex = function(trackId) {
+    for (let i = 0; i < this.tracks.length; i++) {
+        const track = this.tracks[i]
+        if (track["mpris:trackid"] === trackId) {
+            return i
+        }
+    }
+    return -1
+}
 Player.prototype.getTrack = function(trackId) {
-  return this.tracks[this.getTrackIndex(trackId)];
-};
-
+    return this.tracks[this.getTrackIndex(trackId)]
+}
 Player.prototype.addTrack = function(track) {
-  this.tracks.push(track);
-  this.interfaces.tracklist.setTracks(this.tracks);
-
-  let afterTrack = '/org/mpris/MediaPlayer2/TrackList/NoTrack';
-  if (this.tracks.length > 2) {
-    afterTrack = this.tracks[this.tracks.length - 2]['mpris:trackid'];
-  }
-  that.interfaces.tracklist.TrackAdded(afterTrack);
-};
-
+    this.tracks.push(track)
+    this.interfaces.tracklist.setTracks(this.tracks)
+    let afterTrack = "/org/mpris/MediaPlayer2/TrackList/NoTrack"
+    if (this.tracks.length > 2) {
+        afterTrack = this.tracks[this.tracks.length - 2]["mpris:trackid"]
+    }
+    this.interfaces.tracklist.TrackAdded(afterTrack)
+}
 Player.prototype.removeTrack = function(trackId) {
-  let i = this.getTrackIndex(trackId);
-  this.tracks.splice(i, 1);
-  this.interfaces.tracklist.setTracks(this.tracks);
-
-  that.interfaces.tracklist.TrackRemoved(trackId);
-};
+    const i = this.getTrackIndex(trackId)
+    this.tracks.splice(i, 1)
+    this.interfaces.tracklist.setTracks(this.tracks)
+    this.interfaces.tracklist.TrackRemoved(trackId)
+}
 
 /**
  * Get the index of a playlist entry in the `playlists` list property of the
@@ -373,16 +361,14 @@ Player.prototype.removeTrack = function(trackId) {
  * @param {String} playlistId - The id for the playlist entry.
  */
 Player.prototype.getPlaylistIndex = function(playlistId) {
-  for (let i = 0; i < this.playlists.length; i++) {
-    let playlist = this.playlists[i];
-
-    if (playlist.Id === playlistId) {
-      return i;
+    for (let i = 0; i < this.playlists.length; i++) {
+        const playlist = this.playlists[i]
+        if (playlist.Id === playlistId) {
+            return i
+        }
     }
-  }
-
-  return -1;
-};
+    return -1
+}
 
 /**
  * Set the list of playlists advertised to listeners on the bus. Each playlist
@@ -393,14 +379,13 @@ Player.prototype.getPlaylistIndex = function(playlistId) {
  * @param {Array} playlists - A list of playlists.
  */
 Player.prototype.setPlaylists = function(playlists) {
-  this.playlists = playlists;
-  this.playlistCount = playlists.length;
-
-  let that = this;
-  this.playlists.forEach(function(playlist) {
-    that.interfaces.playlists.PlaylistChanged(playlist);
-  });
-};
+    this.playlists = playlists
+    this.playlistCount = playlists.length
+    const that = this
+    this.playlists.forEach(playlist => {
+        that.interfaces.playlists.PlaylistChanged(playlist)
+    })
+}
 
 /**
  * Set the playlist identified by `playlistId` to be the currently active
@@ -411,8 +396,8 @@ Player.prototype.setPlaylists = function(playlists) {
  * @param {String} playlistId - The id of the playlist to activate.
  */
 Player.prototype.setActivePlaylist = function(playlistId) {
-  this.interfaces.playlists.setActivePlaylistId(playlistId);
-};
+    this.interfaces.playlists.setActivePlaylistId(playlistId)
+}
 
 /**
  * Enumerated value for the `playbackStatus` property of the player to indicate
@@ -422,7 +407,7 @@ Player.prototype.setActivePlaylist = function(playlistId) {
  * @static
  * @constant
  */
-Player.PLAYBACK_STATUS_PLAYING = constants.PLAYBACK_STATUS_PLAYING;
+Player.PLAYBACK_STATUS_PLAYING = constants.PLAYBACK_STATUS_PLAYING
 
 /**
  * Enumerated value for the `playbackStatus` property of the player to indicate
@@ -432,7 +417,7 @@ Player.PLAYBACK_STATUS_PLAYING = constants.PLAYBACK_STATUS_PLAYING;
  * @static
  * @constant
  */
-Player.PLAYBACK_STATUS_PAUSED = constants.PLAYBACK_STATUS_PAUSED;
+Player.PLAYBACK_STATUS_PAUSED = constants.PLAYBACK_STATUS_PAUSED
 
 /**
  * Enumerated value for the `playbackStatus` property of the player to indicate
@@ -442,7 +427,7 @@ Player.PLAYBACK_STATUS_PAUSED = constants.PLAYBACK_STATUS_PAUSED;
  * @static
  * @constant
  */
-Player.PLAYBACK_STATUS_STOPPED = constants.PLAYBACK_STATUS_STOPPED;
+Player.PLAYBACK_STATUS_STOPPED = constants.PLAYBACK_STATUS_STOPPED
 
 /**
  * Enumerated value for the `loopStatus` property of the player to indicate
@@ -452,7 +437,7 @@ Player.PLAYBACK_STATUS_STOPPED = constants.PLAYBACK_STATUS_STOPPED;
  * @static
  * @constant
  */
-Player.LOOP_STATUS_NONE = constants.LOOP_STATUS_NONE;
+Player.LOOP_STATUS_NONE = constants.LOOP_STATUS_NONE
 
 /**
  * Enumerated value for the `loopStatus` property of the player to indicate the
@@ -463,7 +448,7 @@ Player.LOOP_STATUS_NONE = constants.LOOP_STATUS_NONE;
  * @static
  * @constant
  */
-Player.LOOP_STATUS_TRACK = constants.LOOP_STATUS_TRACK;
+Player.LOOP_STATUS_TRACK = constants.LOOP_STATUS_TRACK
 
 /**
  * Enumerated value for the `loopStatus` property of the player to indicate the
@@ -473,6 +458,6 @@ Player.LOOP_STATUS_TRACK = constants.LOOP_STATUS_TRACK;
  * @static
  * @constant
  */
-Player.LOOP_STATUS_PLAYLIST = constants.LOOP_STATUS_PLAYLIST;
+Player.LOOP_STATUS_PLAYLIST = constants.LOOP_STATUS_PLAYLIST
 
-module.exports = Player;
+module.exports = Player
