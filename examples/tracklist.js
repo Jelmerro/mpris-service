@@ -3,11 +3,11 @@
 const Player = require("mpris-service")
 
 const player = Player({
-    "name": "nodejs",
     "identity": "Node.js media player",
-    "supportedUriSchemes": ["file"],
+    "name": "nodejs",
+    "supportedInterfaces": ["trackList"],
     "supportedMimeTypes": ["audio/mpeg", "application/ogg"],
-    "supportedInterfaces": ["trackList"]
+    "supportedUriSchemes": ["file"]
 })
 
 // Events
@@ -20,19 +20,19 @@ events.forEach(eventName => {
 
 player.tracks = [
     {
-        "mpris:trackid": player.objectPath("track/0"),
-        "mpris:length": 60 * 1000 * 1000,
         "mpris:artUrl": "http://example.org/image.jpg",
-        "xesam:title": "Track 1 title",
+        "mpris:length": 60 * 1000 * 1000,
+        "mpris:trackid": player.objectPath("track/0"),
         "xesam:album": "Track 1 album name",
-        "xesam:artist": "Track 1 artist"
+        "xesam:artist": "Track 1 artist",
+        "xesam:title": "Track 1 title"
     },
     {
-        "mpris:trackid": player.objectPath("track/1"),
-        "mpris:length": 60 * 1000 * 1000,
         "mpris:artUrl": "file:///home/username/Pictures/example.png",
-        "xesam:title": "Track 2 title",
+        "mpris:length": 60 * 1000 * 1000,
+        "mpris:trackid": player.objectPath("track/1"),
         "xesam:album": "Track 2 album name",
-        "xesam:artist": "Track 2 artist"
+        "xesam:artist": "Track 2 artist",
+        "xesam:title": "Track 2 title"
     }
 ]

@@ -3,11 +3,11 @@
 const Player = require("mpris-service")
 
 const player = Player({
-    "name": "nodejs",
     "identity": "Node.js media player",
-    "supportedUriSchemes": ["file"],
+    "name": "nodejs",
+    "supportedInterfaces": ["player"],
     "supportedMimeTypes": ["audio/mpeg", "application/ogg"],
-    "supportedInterfaces": ["player"]
+    "supportedUriSchemes": ["file"]
 })
 
 player.getPosition = function() {
@@ -45,12 +45,12 @@ player.on("quit", () => {
 setTimeout(() => {
     // @see http://www.freedesktop.org/wiki/Specifications/mpris-spec/metadata/
     player.metadata = {
-        "mpris:trackid": player.objectPath("track/0"),
-        "mpris:length": 60 * 1000 * 1000,
         "mpris:artUrl": "file:///home/username/Pictures/example.png",
-        "xesam:title": "Track title",
+        "mpris:length": 60 * 1000 * 1000,
+        "mpris:trackid": player.objectPath("track/0"),
         "xesam:album": "Track album",
-        "xesam:artist": ["Artist name, can be an array or a single string"]
+        "xesam:artist": ["Artist name, can be an array or a single string"],
+        "xesam:title": "Track title"
     }
 
     player.playbackStatus = Player.PLAYBACK_STATUS_PLAYING

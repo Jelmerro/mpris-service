@@ -3,11 +3,11 @@
 const Player = require("mpris-service")
 
 const player = Player({
-    "name": "nodejs",
     "identity": "Node.js media player",
-    "supportedUriSchemes": ["file"],
+    "name": "nodejs",
+    "supportedInterfaces": ["playlists"],
     "supportedMimeTypes": ["audio/mpeg", "application/ogg"],
-    "supportedInterfaces": ["playlists"]
+    "supportedUriSchemes": ["file"]
 })
 
 player.on("quit", () => {
@@ -21,23 +21,23 @@ player.on("activatePlaylist", playlistId => {
 
 player.setPlaylists([
     {
+        "Icon": "",
         "Id": player.objectPath("playlist/0"),
-        "Name": "The best playlist",
-        "Icon": ""
+        "Name": "The best playlist"
     },
     {
+        "Icon": "",
         "Id": player.objectPath("playlist/1"),
-        "Name": "The wonderful playlist",
-        "Icon": ""
+        "Name": "The wonderful playlist"
     },
     {
+        "Icon": "",
         "Id": player.objectPath("playlist/2"),
-        "Name": "The sexyiest playlist",
-        "Icon": ""
+        "Name": "The sexyiest playlist"
     },
     {
+        "Icon": "",
         "Id": player.objectPath("playlist/3"),
-        "Name": "The coolest playlist",
-        "Icon": ""
+        "Name": "The coolest playlist"
     }
 ])

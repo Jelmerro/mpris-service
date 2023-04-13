@@ -101,8 +101,9 @@ class PlayerInterface extends MprisInterface {
         const position = Math.floor(playerPosition || 0)
         if (isNaN(position)) {
             const err = "github.mpris_service.InvalidPositionError"
-            const message = `The player has set an invalid position: ${playerPosition}`
-            throw new DBusError(err, message)
+            const message = `The player has set an invalid position: ${
+                playerPosition}`
+            throw new Error(err, message)
         }
         return position
     }
@@ -110,8 +111,9 @@ class PlayerInterface extends MprisInterface {
     get LoopStatus() {
         if (!constants.isLoopStatusValid(this._LoopStatus)) {
             const err = "github.mpris_service.InvalidLoopStatusError"
-            const message = `The player has set an invalid loop status: ${this._LoopStatus}`
-            throw new DBusError(err, message)
+            const message = `The player has set an invalid loop status: ${
+                this._LoopStatus}`
+            throw new Error(err, message)
         }
         return this._LoopStatus
     }
@@ -119,8 +121,9 @@ class PlayerInterface extends MprisInterface {
     set LoopStatus(value) {
         if (!constants.isLoopStatusValid(value)) {
             const err = "github.mpris_service.InvalidLoopStatusError"
-            const message = `Tried to set loop status to an invalid value: ${value}`
-            throw new DBusError(err, message)
+            const message = `Tried to set loop status to an invalid value: ${
+                value}`
+            throw new Error(err, message)
         }
         this._setPropertyInternal("LoopStatus", value)
     }
@@ -128,8 +131,9 @@ class PlayerInterface extends MprisInterface {
     get PlaybackStatus() {
         if (!constants.isPlaybackStatusValid(this._PlaybackStatus)) {
             const err = "github.mpris_service.InvalidPlaybackStatusError"
-            const message = `The player has set an invalid playback status: ${this._PlaybackStatus}`
-            throw new DBusError(err, message)
+            const message = `The player has set an invalid playback status: ${
+                this._PlaybackStatus}`
+            throw new Error(err, message)
         }
         return this._PlaybackStatus
     }
