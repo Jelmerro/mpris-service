@@ -163,11 +163,11 @@ class PlayerInterface extends MprisInterface {
     }
 
     Seek(offset) {
-        this.player.emit("seek", offset)
+        this.player.emit("seek", parseInt(offset, 10))
     }
 
     SetPosition(trackId, position) {
-        const e = {position, trackId}
+        const e = {"position": parseInt(position, 10), trackId}
         this.player.emit("position", e)
     }
 
