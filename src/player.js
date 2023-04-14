@@ -1,7 +1,16 @@
 "use strict"
 
 const MprisInterface = require("./mpris-interface")
-const {constants} = require("./util")
+
+const isLoopStatusValid = function(value) {
+    const loopStatuses = ["None", "Playlist", "Track"]
+    return loopStatuses.includes(value)
+}
+
+const isPlaybackStatusValid = function(value) {
+    const playbackStatuses = ["Paused", "Playing", "Stopped"]
+    return playbackStatuses.includes(value)
+}
 
 class PlayerInterface extends MprisInterface {
     constructor(player) {
@@ -32,9 +41,9 @@ class PlayerInterface extends MprisInterface {
 
     _Volume = 0
 
-    _LoopStatus = constants.LOOP_STATUS_NONE
+    _LoopStatus = "None"
 
-    _PlaybackStatus = constants.PLAYBACK_STATUS_STOPPED
+    _PlaybackStatus = "Stopped"
 
     get CanControl() {
         return this._CanControl
@@ -109,7 +118,7 @@ class PlayerInterface extends MprisInterface {
     }
 
     get LoopStatus() {
-        if (!constants.isLoopStatusValid(this._LoopStatus)) {
+        if (!isLoopStatusValid(this._LoopStatus)) {
             const err = "github.mpris_service.InvalidLoopStatusError"
             const message = `The player has set an invalid loop status: ${
                 this._LoopStatus}`
@@ -119,7 +128,7 @@ class PlayerInterface extends MprisInterface {
     }
 
     set LoopStatus(value) {
-        if (!constants.isLoopStatusValid(value)) {
+        if (!isLoopStatusValid(value)) {
             const err = "github.mpris_service.InvalidLoopStatusError"
             const message = `Tried to set loop status to an invalid value: ${
                 value}`
@@ -129,7 +138,7 @@ class PlayerInterface extends MprisInterface {
     }
 
     get PlaybackStatus() {
-        if (!constants.isPlaybackStatusValid(this._PlaybackStatus)) {
+        if (!isPlaybackStatusValid(this._PlaybackStatus)) {
             const err = "github.mpris_service.InvalidPlaybackStatusError"
             const message = `The player has set an invalid playback status: ${
                 this._PlaybackStatus}`

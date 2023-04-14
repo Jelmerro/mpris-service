@@ -53,7 +53,7 @@ setTimeout(() => {
         "xesam:title": "Track title"
     }
 
-    player.playbackStatus = Player.PLAYBACK_STATUS_PLAYING
+    player.playbackStatus = "Playing"
 }, 1000)
 
 setTimeout(() => {

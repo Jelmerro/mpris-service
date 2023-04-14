@@ -67,38 +67,9 @@ const playlistToPlain = wire => {
     return {Icon, Id, Name}
 }
 
-const constants = {
-    "LOOP_STATUS_NONE": "None",
-    "LOOP_STATUS_PLAYLIST": "Playlist",
-    "LOOP_STATUS_TRACK": "Track",
-    "PLAYBACK_STATUS_PAUSED": "Paused",
-    "PLAYBACK_STATUS_PLAYING": "Playing",
-    "PLAYBACK_STATUS_STOPPED": "Stopped"
-}
-
-const playbackStatuses = [
-    constants.PLAYBACK_STATUS_PLAYING,
-    constants.PLAYBACK_STATUS_PAUSED,
-    constants.PLAYBACK_STATUS_STOPPED
-]
-
-const loopStatuses = [
-    constants.LOOP_STATUS_NONE,
-    constants.LOOP_STATUS_PLAYLIST,
-    constants.LOOP_STATUS_TRACK
-]
-
-constants.isLoopStatusValid = function(value) {
-    return loopStatuses.includes(value)
-}
-constants.isPlaybackStatusValid = function(value) {
-    return playbackStatuses.includes(value)
-}
-
 const lcfirst = str => str[0].toLowerCase() + str.substr(1)
 
 module.exports = {
-    constants,
     emptyPlaylist,
     lcfirst,
     metadataToDbus,
