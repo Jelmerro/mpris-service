@@ -1,9 +1,7 @@
 "use strict"
 
 const {Interface} = require("dbus-final").interface
-const {
-    addDBusTypes, metadataToDbus, playlistToDbus, emptyPlaylist
-} = require("./util")
+const {metadataToDbus, playlistToDbus, emptyPlaylist} = require("./util")
 
 class MprisInterface extends Interface {
     constructor(name, player) {
@@ -42,4 +40,4 @@ class MprisInterface extends Interface {
     }
 }
 
-module.exports = addDBusTypes(MprisInterface)
+module.exports = MprisInterface

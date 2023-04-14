@@ -1,7 +1,7 @@
 "use strict"
 
 const MprisInterface = require("./mpris-interface")
-const {addDBusTypes, emptyPlaylist, playlistToDbus} = require("./util")
+const {emptyPlaylist, playlistToDbus} = require("./util")
 
 class PlaylistsInterface extends MprisInterface {
     constructor(player) {
@@ -57,4 +57,20 @@ class PlaylistsInterface extends MprisInterface {
         return playlistToDbus(playlist)
     }
 }
-module.exports = addDBusTypes(PlaylistsInterface)
+
+PlaylistsInterface.configureMembers({
+    "methods": {
+        "ActivatePlaylist": {"inSignature": "o"},
+        "GetPlaylists": {"inSignature": "uusb", "outSignature": "a(oss)"}
+    },
+    "properties": {
+        "ActivePlaylist": {"access": "read", "signature": "(b(oss))"},
+        "Orderings": {"access": "read", "signature": "as"},
+        "PlaylistCount": {"access": "read", "signature": "u"}
+    },
+    "signals": {
+        "PlaylistChanged": {"signature": "(oss)"}
+    }
+})
+
+module.exports = PlaylistsInterface

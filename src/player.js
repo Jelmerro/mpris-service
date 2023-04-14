@@ -1,7 +1,7 @@
 "use strict"
 
 const MprisInterface = require("./mpris-interface")
-const {addDBusTypes, constants} = require("./util")
+const {constants} = require("./util")
 
 class PlayerInterface extends MprisInterface {
     constructor(player) {
@@ -181,4 +181,38 @@ class PlayerInterface extends MprisInterface {
     }
 }
 
-module.exports = addDBusTypes(PlayerInterface)
+PlayerInterface.configureMembers({
+    "methods": {
+        "Next": {},
+        "OpenUri": {"inSignature": "s"},
+        "Pause": {},
+        "Play": {},
+        "PlayPause": {},
+        "Previous": {},
+        "Seek": {"inSignature": "x"},
+        "SetPosition": {"inSignature": "ox"},
+        "Stop": {}
+    },
+    "properties": {
+        "CanControl": {"access": "read", "signature": "b"},
+        "CanGoNext": {"access": "read", "signature": "b"},
+        "CanGoPrevious": {"access": "read", "signature": "b"},
+        "CanPause": {"access": "read", "signature": "b"},
+        "CanPlay": {"access": "read", "signature": "b"},
+        "CanSeek": {"access": "read", "signature": "b"},
+        "LoopStatus": {"signature": "s"},
+        "MaximumRate": {"access": "read", "signature": "d"},
+        "Metadata": {"access": "read", "signature": "a{sv}"},
+        "MinimumRate": {"access": "read", "signature": "d"},
+        "PlaybackStatus": {"access": "read", "signature": "s"},
+        "Position": {"access": "read", "signature": "x"},
+        "Rate": {"signature": "d"},
+        "Shuffle": {"signature": "b"},
+        "Volume": {"signature": "d"}
+    },
+    "signals": {
+        "Seeked": {"signature": "x"}
+    }
+})
+
+module.exports = PlayerInterface

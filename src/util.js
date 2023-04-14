@@ -67,71 +67,6 @@ const playlistToPlain = wire => {
     return {Icon, Id, Name}
 }
 
-const addDBusTypes = inf => {
-    inf.configureMembers({
-        "methods": {
-            "ActivatePlaylist": {"inSignature": "o"},
-            "AddTrack": {"inSignature": "sob"},
-            "GetPlaylists": {"inSignature": "uusb", "outSignature": "a(oss)"},
-            "GetTracksMetadata": {
-                "inSignature": "ao", "outSignature": "aa{sv}"
-            },
-            "GoTo": {"inSignature": "o"},
-            "Next": {},
-            "OpenUri": {"inSignature": "s"},
-            "Pause": {},
-            "Play": {},
-            "PlayPause": {},
-            "Previous": {},
-            "Quit": {},
-            "Raise": {},
-            "RemoveTrack": {"inSignature": "o"},
-            "Seek": {"inSignature": "x"},
-            "SetPosition": {"inSignature": "ox"},
-            "Stop": {}
-        },
-        "properties": {
-            "ActivePlaylist": {"access": "read", "signature": "(b(oss))"},
-            "CanControl": {"access": "read", "signature": "b"},
-            "CanEditTracks": {"access": "read", "signature": "b"},
-            "CanGoNext": {"access": "read", "signature": "b"},
-            "CanGoPrevious": {"access": "read", "signature": "b"},
-            "CanPause": {"access": "read", "signature": "b"},
-            "CanPlay": {"access": "read", "signature": "b"},
-            "CanQuit": {"access": "read", "signature": "b"},
-            "CanRaise": {"access": "read", "signature": "b"},
-            "CanSeek": {"access": "read", "signature": "b"},
-            "CanSetFullscreen": {"access": "read", "signature": "b"},
-            "DesktopEntry": {"access": "read", "signature": "s"},
-            "Fullscreen": {"signature": "b"},
-            "HasTrackList": {"access": "read", "signature": "b"},
-            "Identity": {"access": "read", "signature": "s"},
-            "LoopStatus": {"signature": "s"},
-            "MaximumRate": {"access": "read", "signature": "d"},
-            "Metadata": {"access": "read", "signature": "a{sv}"},
-            "MimimumRate": {"access": "read", "signature": "d"},
-            "Orderings": {"access": "read", "signature": "as"},
-            "PlaybackStatus": {"access": "read", "signature": "s"},
-            "PlaylistCount": {"access": "read", "signature": "u"},
-            "Rate": {"signature": "d"},
-            "Shuffle": {"signature": "d"},
-            "SupportedMimeTypes": {"access": "read", "signature": "as"},
-            "SupportedUriSchemes": {"access": "read", "signature": "as"},
-            "Tracks": {"access": "read", "signature": "ao"},
-            "Volume": {"signature": "d"}
-        },
-        "signals": {
-            "PlaylistChanged": {"signature": "(oss)"},
-            "Seeked": {"signature": "x"},
-            "TrackAdded": {"signature": "a{sv}"},
-            "TrackListReplaced": {"signature": "aoo"},
-            "TrackMetadataChanged": {"signature": "a{sv}"},
-            "TrackRemoved": {"signature": "o"}
-        }
-    })
-    return inf
-}
-
 const constants = {
     "LOOP_STATUS_NONE": "None",
     "LOOP_STATUS_PLAYLIST": "Playlist",
@@ -163,7 +98,6 @@ constants.isPlaybackStatusValid = function(value) {
 const lcfirst = str => str[0].toLowerCase() + str.substr(1)
 
 module.exports = {
-    addDBusTypes,
     constants,
     emptyPlaylist,
     lcfirst,

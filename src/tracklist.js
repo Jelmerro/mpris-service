@@ -65,4 +65,24 @@ class TracklistInterface extends MprisInterface {
         ]
     }
 }
+
+TracklistInterface.configureMembers({
+    "methods": {
+        "AddTrack": {"inSignature": "sob"},
+        "GetTracksMetadata": {"inSignature": "ao", "outSignature": "aa{sv}"},
+        "GoTo": {"inSignature": "o"},
+        "RemoveTrack": {"inSignature": "o"}
+    },
+    "properties": {
+        "CanEditTracks": {"access": "read", "signature": "b"},
+        "Tracks": {"access": "read", "signature": "ao"}
+    },
+    "signals": {
+        "TrackAdded": {"signature": "a{sv}"},
+        "TrackListReplaced": {"signature": "aoo"},
+        "TrackMetadataChanged": {"signature": "a{sv}"},
+        "TrackRemoved": {"signature": "o"}
+    }
+})
+
 module.exports = TracklistInterface

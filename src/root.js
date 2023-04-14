@@ -1,7 +1,6 @@
 "use strict"
 
 const MprisInterface = require("./mpris-interface")
-const {addDBusTypes} = require("./util")
 
 class RootInterface extends MprisInterface {
     constructor(player, opts = {}) {
@@ -87,4 +86,23 @@ class RootInterface extends MprisInterface {
     }
 }
 
-module.exports = addDBusTypes(RootInterface)
+RootInterface.configureMembers({
+    "methods": {
+        "Quit": {},
+        "Raise": {}
+    },
+    "properties": {
+        "CanQuit": {"access": "read", "signature": "b"},
+        "CanRaise": {"access": "read", "signature": "b"},
+        "CanSetFullscreen": {"access": "read", "signature": "b"},
+        "DesktopEntry": {"access": "read", "signature": "s"},
+        "Fullscreen": {"signature": "b"},
+        "HasTrackList": {"access": "read", "signature": "b"},
+        "Identity": {"access": "read", "signature": "s"},
+        "SupportedMimeTypes": {"access": "read", "signature": "as"},
+        "SupportedUriSchemes": {"access": "read", "signature": "as"}
+    },
+    "signals": {}
+})
+
+module.exports = RootInterface
